@@ -1,0 +1,22 @@
+from src.core.base import BaseModel
+from .user_types.UserType import UserType
+from sqlalchemy import Column, Integer, Enum, Boolean, LargeBinary, ForeignKey
+from sqlalchemy.orm import relationship
+
+class User(BaseModel):
+    """ Abstract base User class, for authentication and account information (needs Person) """
+    __tablename__ = "users"
+    __abstract__ = True
+
+    user_id = Column("user_id", Integer, ForeignKey('persons.person_id', ondelete='CASCADE'), primary_key=True, nullable=False)
+    password_hash = Column("password_hash", LargeBinary(length=60), nullable=False)
+    salt = Column("salt", LargeBinary(length=16), nullable=False)
+    email_verified = Column("email_verified", Boolean, default=False, nullable=False)
+    user_type = Column("user_type", Enum(UserType), nullable=False)
+
+    __mapper_args__ = {
+        "polymorphic_on": user_type,
+        "with_polymorphic": "*"
+    }
+
+    person = relationship("Person", back_populates="user", uselist=False)
