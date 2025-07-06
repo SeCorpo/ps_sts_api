@@ -5,3 +5,7 @@ from .base_service import (
     update,
     delete,
 )
+
+from .person_service import (
+    create_person,
+)

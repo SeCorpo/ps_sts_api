@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
 from src.core.base import BaseModel
+from pydantic import BaseModel as PydanticBaseModel
 
 from src.core.utils.logger import get_logger
 
@@ -13,8 +14,8 @@ T = TypeVar('T', bound=BaseModel)
 async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[T]:
     """Get a single object by field(s)."""
     try:
-        stmt = select(model).filter_by(**filters)
-        result = await db.execute(stmt)
+        query = select(model).filter_by(**filters)
+        result = await db.execute(query)
         return result.scalar_one_or_none()
     except (NoResultFound, SQLAlchemyError) as e:
         logger.error(f"Error fetching {model.__name__} with {filters}: {e}")
@@ -23,19 +24,19 @@ async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[
 async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
     """Get all objects for a model, optionally filtered by fields."""
     try:
-        stmt = select(model)
+        query = select(model)
         if filters:
-            stmt = stmt.filter_by(**filters)
-        result = await db.execute(stmt)
+            query = query.filter_by(**filters)
+        result = await db.execute(query)
         return result.scalars().all()
     except SQLAlchemyError as e:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
 
-async def create(db: AsyncSession, model: Type[T], **data) -> Optional[T]:
-    """Create a new object."""
+async def create(db: AsyncSession, model: Type[T], schema: PydanticBaseModel) -> Optional[T]:
+    """Create a new object from a Pydantic schema."""
     try:
-        obj = model(**data)
+        obj = model(**schema.model_dump())
         db.add(obj)
         await db.commit()
         await db.refresh(obj)

@@ -16,4 +16,5 @@ they receive a database session from a router endpoint
 9. All directories are Python Packages (they include __init__)
 10. Categorial directories and db tables have plural naming, files and objects have singular names
 11. All models use BaseModel from core/base
-12. 
+12. When creating an object, return the created object to the client
+13. 

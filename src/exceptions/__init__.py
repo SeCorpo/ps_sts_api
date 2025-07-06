@@ -18,3 +18,7 @@ from .session import (
     SESSION_NOT_FOUND,
     SESSION_EXPIRED,
 )
+
+from .general_exceptions import (
+    INTEGRITY_ERROR,
+)
