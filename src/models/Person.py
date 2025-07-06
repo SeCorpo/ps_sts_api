@@ -22,3 +22,23 @@ class Person(BaseModel):
     country = Column("country", VARCHAR(64), nullable=True)
 
     user = relationship("User", back_populates="person", uselist=False)
+
+    @property
+    def fullname(self) -> str:
+        if self.infix:
+            return f"{self.first_name} {self.infix} {self.last_name}"
+        return f"{self.first_name} {self.last_name}"
+
+    @property
+    def address(self) -> str:
+        """ Eikensingel 14, 7213WJ Gorssel """
+        parts = []
+        if self.street and self.house_number:
+            parts.append(f"{self.street} {self.house_number}")
+        elif self.street:
+            parts.append(self.street)
+        if self.postal_code and self.city:
+            parts.append(f"{self.postal_code} {self.city}")
+        elif self.city:
+            parts.append(self.city)
+        return ', '.join(parts)
