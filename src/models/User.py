@@ -1,7 +1,9 @@
 from src.core.base import BaseModel
-from .user_types.UserType import UserType
+from src.models.user_types.UserType import UserType
 from sqlalchemy import Column, Integer, Enum, Boolean, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.associationproxy import association_proxy
+
 
 class User(BaseModel):
     """ Abstract base User class, for authentication and account information (needs Person) """
@@ -20,3 +22,8 @@ class User(BaseModel):
     }
 
     person = relationship("Person", back_populates="user", uselist=False)
+
+    # Link to association objects
+    group_associations = relationship("GroupUser", back_populates="user", cascade="all, delete-orphan")
+    # Direct proxy to Group objects
+    groups = association_proxy('group_associations', 'group')

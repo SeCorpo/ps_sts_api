@@ -8,3 +8,4 @@ from .user_types import (
     Teacher,
     UserType,
 )
+from .Group import Group
