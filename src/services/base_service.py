@@ -33,10 +33,12 @@ async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
 
-async def create(db: AsyncSession, model: Type[T], schema: PydanticBaseModel) -> Optional[T]:
-    """Create a new object from a Pydantic schema."""
+async def create(db: AsyncSession, model: Type[T], schema: PydanticBaseModel, created_by_user_id: Optional[int] = None) -> Optional[T]:
+    """ Create a new object from a Pydantic schema, optionally setting created_by_user_id """
     try:
         obj = model(**schema.model_dump())
+        if created_by_user_id is not None and hasattr(obj, "created_by_user_id"):
+            obj.created_by_user_id = created_by_user_id
         db.add(obj)
         await db.commit()
         await db.refresh(obj)
@@ -69,3 +71,15 @@ async def delete(db: AsyncSession, obj: T) -> bool:
         await db.rollback()
         logger.error(f"Error deleting {type(obj).__name__}: {e}")
         return False
+
+
+def filtered_schema_for_model(model: Type[T], schema: PydanticBaseModel) -> PydanticBaseModel:
+    """ Helper function for when the received schema includes fields that are not in the model, to prevent typeerror """
+    """
+    Return a generic Pydantic BaseModel instance containing only the fields
+    that are valid columns on the SQLAlchemy model.
+    """
+    model_fields = {field: getattr(schema, field)
+                    for field in model.__table__.columns.keys()
+                    if hasattr(schema, field)}
+    return PydanticBaseModel.model_validate(model_fields)

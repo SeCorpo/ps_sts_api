@@ -7,13 +7,13 @@ from src.models import Person
 from src.schemas.person import PersonCreateSchema
 
 
-async def create_person(db: AsyncSession, schema: PersonCreateSchema) -> Optional[Person]:
+async def create_person(db: AsyncSession, schema: PersonCreateSchema, created_by_user_id: Optional[int] = None) -> Optional[Person]:
     existing = await get_by_field(db, Person, email=schema.email)
     if existing:
         raise EMAIL_ALREADY_EXISTS
 
     try:
-        person = await create(db, Person, schema)
+        person = await create(db, Person, schema, created_by_user_id=created_by_user_id)
         return person
     except IntegrityError:
         await db.rollback()

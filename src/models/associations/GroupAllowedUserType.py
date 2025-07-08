@@ -10,4 +10,4 @@ class GroupAllowedUserType(BaseModel):
     group_id = Column("group_id", Integer, ForeignKey("groups.group_id", ondelete="CASCADE"), primary_key=True)
     user_type = Column("user_type", Enum(UserType), primary_key=True)
 
-    group = relationship("Group", back_populates="allowed_user_types")
+    group = relationship("Group", back_populates="allowed_user_type_associations")
