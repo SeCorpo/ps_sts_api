@@ -9,7 +9,5 @@ class GroupAllowedUserType(BaseModel):
 
     group_id = Column("group_id", Integer, ForeignKey("groups.group_id", ondelete="CASCADE"), primary_key=True)
     user_type = Column("user_type", Enum(UserType), primary_key=True)
-    created_by_user_id = Column("created_by_user_id", Integer, ForeignKey("users.user_id", ondelete="SET NULL"), nullable=True)
 
     group = relationship("Group", back_populates="allowed_user_types")
-    created_by = relationship("User", foreign_keys=[created_by_user_id])
