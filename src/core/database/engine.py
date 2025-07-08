@@ -15,7 +15,8 @@ DB_ECHO: bool = os.getenv("DB_ECHO", "false").lower() == "true"
 
 logger = get_logger("database.engine")
 
-missing_vars = [v for v in ["DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"] if not locals()[v]]
+required_vars = ["DB_USER", "DB_HOST", "DB_PORT", "DB_NAME"]
+missing_vars = [v for v in required_vars if not locals()[v]]
 if missing_vars:
     logger.error(f"Missing database environment variables: {', '.join(missing_vars)}")
     raise RuntimeError(f"Missing DB environment variables: {', '.join(missing_vars)}")
