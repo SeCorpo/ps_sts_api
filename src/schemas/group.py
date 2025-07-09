@@ -37,3 +37,40 @@ class GroupUserCreateSchema(BaseModel):
             if not v:
                 raise ValueError("Group name cannot be empty.")
         return v
+
+
+class FindGroupSchema(BaseModel):
+    group_name: constr(max_length=128)
+
+    @field_validator("name", mode="before")
+    def validate_name(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                raise ValueError("Group name cannot be empty.")
+        return v
+
+
+class FindGroupAllowedUserTypeSchema(BaseModel):
+    group_name: constr(max_length=128)
+    user_type: UserType
+
+    @field_validator("group_name", mode="before")
+    def validate_group_name(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                raise ValueError("Group name cannot be empty.")
+        return v
+
+class FindGroupUserSchema(BaseModel):
+    group_name: constr(max_length=128)
+    user_email: EmailStr
+
+    @field_validator("group_name", mode="before")
+    def validate_group_name(cls, v):
+        if isinstance(v, str):
+            v = v.strip()
+            if not v:
+                raise ValueError("Group name cannot be empty.")
+        return v

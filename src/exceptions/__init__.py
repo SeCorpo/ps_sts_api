@@ -32,6 +32,7 @@ from .group import (
     GROUP_OPERATION_FORBIDDEN,
     GROUP_USER_TYPE_NOT_ALLOWED,
     GROUP_UNABLE_TO_CREATE,
+    GROUP_USER_TYPE_NOT_FOUND,
 )
 
 from .user import (

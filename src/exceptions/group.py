@@ -39,3 +39,8 @@ GROUP_UNABLE_TO_CREATE = HTTPException(
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
     detail="Unable to create group due to an internal error."
 )
+
+GROUP_USER_TYPE_NOT_FOUND = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="This group does not have the specified user type."
+)
