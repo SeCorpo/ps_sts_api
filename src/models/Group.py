@@ -9,7 +9,7 @@ class Group(BaseModel):
     __tablename__ = "groups"
 
     group_id = Column("group_id", Integer, primary_key=True, autoincrement=True)
-    name = Column("name", VARCHAR(128), unique=True, nullable=False)
+    name = Column("name", VARCHAR(64), unique=True, nullable=False)
     is_active = Column("is_active", Boolean, default=True, nullable=False)
 
     # Link to association objects

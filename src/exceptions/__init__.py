@@ -21,6 +21,7 @@ from .session import (
 
 from .general_exceptions import (
     INTEGRITY_ERROR,
+    NO_VALUE_PROVIDED,
 )
 
 from .group import (
@@ -33,6 +34,9 @@ from .group import (
     GROUP_USER_TYPE_NOT_ALLOWED,
     GROUP_UNABLE_TO_CREATE,
     GROUP_USER_TYPE_NOT_FOUND,
+    GROUP_MEMBER_EMAILS_EMPTY,
+    GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE,
+    GROUP_UNABLE_TO_ADD_USER_TO_GROUP,
 )
 
 from .user import (

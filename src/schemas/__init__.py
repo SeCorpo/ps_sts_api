@@ -1,8 +1,8 @@
-from .person import (
-    PersonCreateSchema
-)
-from .group import (
+from .group_schemas import (
+    GroupNameSchema,
+    GroupIsActiveSchema,
+    GroupAllowedUserTypeSchema,
+    GroupUserSchema,
     GroupCreateSchema,
-    GroupAllowedUserTypeCreateSchema,
-    GroupUserCreateSchema,
+    GroupChangeNameSchema,
 )

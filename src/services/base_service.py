@@ -6,6 +6,7 @@ from src.core.base import BaseModel
 from pydantic import BaseModel as PydanticBaseModel
 
 from src.core.utils.logger import get_logger
+from src.models import User, Person
 
 logger = get_logger("services.base_service")
 
@@ -33,19 +34,16 @@ async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
 
-async def create(db: AsyncSession, model: Type[T], schema: PydanticBaseModel, created_by_user_id: Optional[int] = None) -> Optional[T]:
-    """ Create a new object from a Pydantic schema, optionally setting created_by_user_id """
+async def create(db: AsyncSession, obj: T) -> Optional[T]:
+    """ Create a new object """
     try:
-        obj = model(**schema.model_dump())
-        if created_by_user_id is not None and hasattr(obj, "created_by_user_id"):
-            obj.created_by_user_id = created_by_user_id
         db.add(obj)
         await db.commit()
         await db.refresh(obj)
         return obj
     except SQLAlchemyError as e:
         await db.rollback()
-        logger.error(f"Error creating {model.__name__}: {e}")
+        logger.error(f"Error creating {type(obj).__name__}: {e}")
         return None
 
 async def update(db: AsyncSession, obj: T, **data) -> Optional[T]:
@@ -83,3 +81,11 @@ def filtered_schema_for_model(model: Type[T], schema: PydanticBaseModel) -> Pyda
                     for field in model.__table__.columns.keys()
                     if hasattr(schema, field)}
     return PydanticBaseModel.model_validate(model_fields)
+
+
+async def get_user_obj_by_email(db: AsyncSession, email: str) -> Optional[User]:
+    """ Function to get user via its persons email, only for use in service layer (after schema) """
+    person = await get_by_field(db, Person, email=email)
+    if person and person.user:
+        return person.user
+    return None
