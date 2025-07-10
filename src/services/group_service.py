@@ -1,7 +1,6 @@
 from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
-from base_service import get_by_field, create, delete
 from src.exceptions import INTEGRITY_ERROR, GROUP_NAME_ALREADY_EXISTS, GROUP_NOT_FOUND, USER_NOT_FOUND, \
     GROUP_USER_TYPE_NOT_ALLOWED, GROUP_UNABLE_TO_CREATE, GROUP_USER_TYPE_NOT_FOUND, \
     GROUP_MEMBER_EMAILS_EMPTY, NO_VALUE_PROVIDED, GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE, \
@@ -10,12 +9,13 @@ from src.models import Group
 from src.models.associations import GroupAllowedUserType, GroupUser
 from src.schemas import GroupCreateSchema, GroupAllowedUserTypeSchema, GroupUserSchema, GroupIsActiveSchema, \
     GroupNameSchema, GroupChangeNameSchema
-from src.services import update
-from src.services.base_service import get_user_obj_by_email
+from src.services import update, get_by_field, create, delete, get_user_obj_by_email, get_by_field_force
 
 
 async def get_group_by_name(db: AsyncSession, group_name: str) -> Optional[Group]:
     return await get_by_field(db, Group, name=group_name)
+async def get_group_by_name_force(db: AsyncSession, group_name: str) -> Optional[Group]:
+    return await get_by_field_force(db, Group, name=group_name)
 
 
 async def update_group_is_active(
@@ -128,7 +128,8 @@ async def create_group(
         schema: GroupCreateSchema,
         created_by_user_id: Optional[int] = None,
 ) -> Optional[Group]:
-    group = await get_group_by_name(db, schema.group_name)
+    #  group.name is not available after soft deleting
+    group = await get_group_by_name_force(db, schema.group_name)
     if group:
         raise GROUP_NAME_ALREADY_EXISTS
     try:
@@ -196,7 +197,7 @@ async def delete_group(
         db: AsyncSession,
         schema: GroupNameSchema,
 ) -> None:
-    """ Function to delete a group, including associated objects """
+    """ Function to soft delete a group, setting deleted status """
     group = await get_group_by_name(db, schema.group_name)
     if group is None:
         raise GROUP_NOT_FOUND
@@ -216,7 +217,8 @@ async def update_group_name(
     if group is None:
         raise GROUP_NOT_FOUND
 
-    new_name_group = await get_group_by_name(db, schema.new_group_name)
+    #  check if group.name is available, also among soft deleted groups
+    new_name_group = await get_group_by_name_force(db, schema.new_group_name)
     if new_name_group:
         raise GROUP_NAME_ALREADY_EXISTS
 

@@ -27,9 +27,8 @@ they receive a database session from a router endpoint
 - `create_"object"`
 - `delete_"object"`
 - `toggle_"object"` : create / delete (standard: add: bool = True)
-  - to be: create / activate / deactivate via "currently_associated"
 
 #### Rules
 - Service create functions take a created_by_user_id from the current user
 - Service functions (excluding base_service) take Pydantic schemas
-- Association models are managed within the dominant Model service module
+- Association models are managed within the (dominant) Model service module
