@@ -18,7 +18,7 @@ async def get_group_by_name(db: AsyncSession, group_name: str) -> Optional[Group
     return await get_by_field(db, Group, name=group_name)
 
 
-async def toggle_group_is_active(
+async def update_group_is_active(
         db: AsyncSession,
         schema: GroupIsActiveSchema,
 ):
@@ -208,7 +208,7 @@ async def delete_group(
         raise INTEGRITY_ERROR
 
 
-async def change_group_name(
+async def update_group_name(
         db: AsyncSession,
         schema: GroupChangeNameSchema,
 ) -> Optional[Group]:

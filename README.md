@@ -1,7 +1,7 @@
 # ps_sts_api
 Primary School Student Tracking System - API
 
-
+---
 ### Rules
 
 1. Models-classes don't directly interact with get_db
@@ -17,4 +17,19 @@ they receive a database session from a router endpoint
 10. Categorial directories and db tables have plural naming, files and objects have singular names
 11. All models use BaseModel from core/base
 12. When creating an object, return the created object to the client
-13. 
+
+---
+### Service functions
+#### Naming conventions
+- `get_"object"_by_"variable"`
+- `update_"object"`
+- `update_"object"_"variable"`
+- `create_"object"`
+- `delete_"object"`
+- `toggle_"object"` : create / delete (standard: add: bool = True)
+  - to be: create / activate / deactivate via "currently_associated"
+
+#### Rules
+- Service create functions take a created_by_user_id from the current user
+- Service functions (excluding base_service) take Pydantic schemas
+- Association models are managed within the dominant Model service module

@@ -10,10 +10,10 @@ from .base_service import (
 
 from.group_service import (
     get_group_by_name,
-    toggle_group_is_active,
+    update_group_is_active,
     toggle_group_allowed_user_type,
     toggle_group_user,
     create_group,
     delete_group,
-    change_group_name
+    update_group_name
 )
