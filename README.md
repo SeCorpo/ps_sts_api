@@ -17,6 +17,7 @@ they receive a database session from a router endpoint
 10. Categorial directories and db tables have plural naming, files and objects have singular names
 11. All models use BaseModel from core/base
 12. When creating an object, return the created object to the client
+13. Every database table has its own file and class (no two classes in one file)
 
 ---
 ### Service functions

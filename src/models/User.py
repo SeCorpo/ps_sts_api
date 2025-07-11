@@ -1,5 +1,5 @@
 from src.core.base import BaseModel
-from src.models.user_types.UserType import UserType
+from src.constants.user_type import UserType
 from sqlalchemy import Column, Integer, Enum, Boolean, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy

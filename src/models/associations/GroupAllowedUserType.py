@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from src.core.base import BaseModel
-from src.models.user_types.UserType import UserType
+from src.constants.user_type import UserType
 
 class GroupAllowedUserType(BaseModel):
     """ Many-to-many Association model for allowed user types in a group """
