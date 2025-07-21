@@ -1,11 +1,14 @@
-from .Person import Person
-from .User import User
-from .user_types import (
+from .group import (
+    Group,
+    GroupUser,
+    GroupUsertype
+)
+from .person import Person
+from .user import (
+    User,
     AdminOrganisation,
     AdminSchool,
     Parent,
     Student,
-    Teacher,
-    UserType,
+    Teacher
 )
-from .Group import Group

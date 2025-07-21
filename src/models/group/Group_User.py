@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, ForeignKey
 from sqlalchemy.orm import relationship
-from src.core.base import BaseModel
+from src.core import BaseModel
 
 
 class GroupUser(BaseModel):

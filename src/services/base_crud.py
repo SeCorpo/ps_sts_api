@@ -2,11 +2,9 @@ from typing import Type, TypeVar, Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
-from src.core.base import BaseModel
-from pydantic import BaseModel as PydanticBaseModel
+from src.core import BaseModel
+from src.core import get_logger
 
-from src.core.utils.logger import get_logger
-from src.models import User, Person
 
 """
 get_by_field: for normal use, no need to modify deleted objects
@@ -113,23 +111,3 @@ async def delete_force(db: AsyncSession, obj: T) -> bool:
         await db.rollback()
         logger.error(f"Error deleting {type(obj).__name__}: {e}")
         return False
-
-
-def filtered_schema_for_model(model: Type[T], schema: PydanticBaseModel) -> PydanticBaseModel:
-    """ Helper function for when the received schema includes fields that are not in the model, to prevent typeerror """
-    """
-    Return a generic Pydantic BaseModel instance containing only the fields
-    that are valid columns on the SQLAlchemy model.
-    """
-    model_fields = {field: getattr(schema, field)
-                    for field in model.__table__.columns.keys()
-                    if hasattr(schema, field)}
-    return PydanticBaseModel.model_validate(model_fields)
-
-
-async def get_user_obj_by_email(db: AsyncSession, email: str) -> Optional[User]:
-    """ Function to get user via its persons email, only for use in service layer (after schema) """
-    person = await get_by_field(db, Person, email=email)
-    if person and person.user:
-        return person.user
-    return None

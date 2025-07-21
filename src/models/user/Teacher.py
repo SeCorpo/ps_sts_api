@@ -1,5 +1,5 @@
-from ..User import User
-from src.constants.usertype import Usertype
+from src.models import User
+from src.constants import Usertype
 from sqlalchemy import Column, Integer, ForeignKey
 
 class Teacher(User):

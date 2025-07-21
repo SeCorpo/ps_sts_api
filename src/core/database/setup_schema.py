@@ -1,7 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError, OperationalError
-from src.core.database.engine import engine
+from src.core.database import engine
 from src.core.base import Base
-from src.core.utils.logger import get_logger
+from src.core import get_logger
 
 logger = get_logger("database.setup_schema")
 

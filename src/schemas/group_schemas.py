@@ -1,6 +1,6 @@
 from typing import Optional, Set
 from pydantic import BaseModel, field_validator, constr, EmailStr, Field
-from src.constants.usertype import Usertype
+from src.constants import Usertype
 
 
 class GroupNameSchema(BaseModel):

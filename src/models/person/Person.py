@@ -1,4 +1,4 @@
-from src.core.base import BaseModel
+from src.core import BaseModel
 from sqlalchemy import Column, Integer, VARCHAR, Enum, Date
 from sqlalchemy.orm import relationship
 

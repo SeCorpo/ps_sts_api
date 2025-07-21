@@ -1,7 +1,7 @@
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import text
-from src.core.database.session import AsyncSessionLocal
-from src.core.utils.logger import get_logger
+from src.core.database import AsyncSessionLocal
+from src.core import get_logger
 
 logger = get_logger("database.test_connection")
 

@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy.exc import ArgumentError
-from src.core.utils.logger import get_logger
+from src.core import get_logger
 
 load_dotenv()
 

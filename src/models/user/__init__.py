@@ -1,3 +1,4 @@
+from .User import User
 from .AdminOrganisation import AdminOrganisation
 from .AdminSchool import AdminSchool
 from .Parent import Parent

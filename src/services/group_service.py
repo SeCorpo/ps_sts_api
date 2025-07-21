@@ -5,8 +5,7 @@ from src.exceptions import INTEGRITY_ERROR, GROUP_NAME_ALREADY_EXISTS, GROUP_NOT
     GROUP_USERTYPE_NOT_ALLOWED, GROUP_UNABLE_TO_CREATE, GROUP_USERTYPE_NOT_FOUND, \
     GROUP_MEMBER_EMAILS_EMPTY, NO_VALUE_PROVIDED, GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE, \
     GROUP_UNABLE_TO_ADD_USER_TO_GROUP
-from src.models import Group
-from src.models.associations import GroupUsertype, GroupUser
+from src.models import Group, GroupUser, GroupUsertype
 from src.schemas import GroupCreateSchema, GroupUsertypeSchema, GroupUserSchema, GroupIsActiveSchema, \
     GroupNameSchema, GroupChangeNameSchema
 from src.services import update, get_by_field, create, delete, get_user_obj_by_email, get_by_field_force
@@ -150,8 +149,8 @@ async def create_group(
 
     if schema.group_usertypes:
         for usertype in schema.group_usertypes:
-            group_allowed_user_type = await get_by_field(db, GroupUsertype, group_id=group.group_id, usertype=usertype)
-            if group_allowed_user_type is None:
+            group_allowed_usertype = await get_by_field(db, GroupUsertype, group_id=group.group_id, usertype=usertype)
+            if group_allowed_usertype is None:
                 try:
                     obj = GroupUsertype(
                         group_id=group.group_id,
