@@ -5,7 +5,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 
 
 class Group(BaseModel):
-    """ Group of users, user_type is managed manually """
+    """ Group of users, usertype is managed manually """
     __tablename__ = "groups"
 
     group_id = Column("group_id", Integer, primary_key=True, autoincrement=True)
@@ -13,9 +13,9 @@ class Group(BaseModel):
     is_active = Column("is_active", Boolean, default=True, nullable=False)
 
     # Link to association objects
-    allowed_user_type_associations = relationship("GroupAllowedUserType", back_populates="group", cascade="all, delete-orphan")
-    # Direct proxy to UserType (enum) objects
-    allowed_user_types = association_proxy("allowed_user_type_associations", "user_type")
+    usertype_associations = relationship("GroupUsertype", back_populates="group", cascade="all, delete-orphan")
+    # Direct proxy to Usertype (enum) objects
+    usertypes = association_proxy("usertype_associations", "usertype")
     # Link to association objects
     member_associations = relationship("GroupUser", back_populates="group", cascade="all, delete-orphan")
     # Direct proxy to User objects

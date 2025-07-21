@@ -25,9 +25,9 @@ USER_INVALID_EMAIL = HTTPException(
     detail="Provided email address is invalid."
 )
 
-USER_TYPE_INVALID = HTTPException(
+USERTYPE_INVALID = HTTPException(
     status_code=status.HTTP_400_BAD_REQUEST,
-    detail="Provided user type is invalid."
+    detail="Provided usertype is invalid."
 )
 
 USER_EMAIL_NOT_VERIFIED = HTTPException(

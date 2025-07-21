@@ -1,5 +1,5 @@
 from src.models.User import User
-from src.constants.user_type import UserType
+from src.constants.usertype import Usertype
 from sqlalchemy import Column, Integer, ForeignKey
 
 class Parent(User):
@@ -10,5 +10,5 @@ class Parent(User):
     # extra fields specific to a parent
 
     __mapper_args__ = {
-        "polymorphic_identity": UserType.PARENT,
+        "polymorphic_identity": Usertype.PARENT,
     }

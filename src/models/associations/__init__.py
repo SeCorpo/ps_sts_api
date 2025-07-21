@@ -1,2 +1,2 @@
-from .GroupUser import GroupUser
-from .GroupAllowedUserType import GroupAllowedUserType
+from .Group_User import GroupUser
+from .Group_usertype import GroupUsertype

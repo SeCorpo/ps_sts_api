@@ -1,1 +1,1 @@
-from .user_type import UserType
+from .usertype import Usertype

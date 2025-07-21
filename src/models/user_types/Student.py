@@ -1,5 +1,5 @@
 from ..User import User
-from src.constants.user_type import UserType
+from src.constants.usertype import Usertype
 from sqlalchemy import Column, Integer, ForeignKey
 
 class Student(User):
@@ -10,5 +10,5 @@ class Student(User):
     # extra fields specific to a student
 
     __mapper_args__ = {
-        "polymorphic_identity": UserType.STUDENT,
+        "polymorphic_identity": Usertype.STUDENT,
     }

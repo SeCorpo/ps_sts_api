@@ -1,5 +1,5 @@
 from src.core.base import BaseModel
-from src.constants.user_type import UserType
+from src.constants.usertype import Usertype
 from sqlalchemy import Column, Integer, Enum, Boolean, LargeBinary, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -14,10 +14,10 @@ class User(BaseModel):
     password_hash = Column("password_hash", LargeBinary(length=60), nullable=False)
     salt = Column("salt", LargeBinary(length=16), nullable=False)
     email_verified = Column("email_verified", Boolean, default=False, nullable=False)
-    user_type = Column("user_type", Enum(UserType), nullable=False)
+    usertype = Column("usertype", Enum(Usertype), nullable=False)
 
     __mapper_args__ = {
-        "polymorphic_on": user_type,
+        "polymorphic_on": usertype,
         "with_polymorphic": "*"
     }
 

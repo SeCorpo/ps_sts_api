@@ -1,6 +1,6 @@
 from typing import Optional, Set
 from pydantic import BaseModel, field_validator, constr, EmailStr, Field
-from src.models import UserType
+from src.constants.usertype import Usertype
 
 
 class GroupNameSchema(BaseModel):
@@ -17,8 +17,8 @@ class GroupNameSchema(BaseModel):
 class GroupIsActiveSchema(GroupNameSchema):
     group_is_active: Optional[bool]
 
-class GroupAllowedUserTypeSchema(GroupNameSchema):
-    group_allowed_user_types: Optional[Set[UserType]] = Field(default_factory=set)
+class GroupUsertypeSchema(GroupNameSchema):
+    group_usertypes: Optional[Set[Usertype]] = Field(default_factory=set)
 
 class GroupUserSchema(GroupNameSchema):
     group_member_emails: Optional[Set[EmailStr]] = Field(default_factory=set)
@@ -26,7 +26,7 @@ class GroupUserSchema(GroupNameSchema):
 
 class GroupCreateSchema(GroupNameSchema):
     group_is_active: Optional[bool]
-    group_allowed_user_types: Optional[Set[UserType]] = Field(default_factory=set)
+    group_usertypes: Optional[Set[Usertype]] = Field(default_factory=set)
     group_member_emails: Optional[Set[EmailStr]] = Field(default_factory=set)
 
 class GroupChangeNameSchema(GroupNameSchema):

@@ -30,9 +30,9 @@ GROUP_OPERATION_FORBIDDEN = HTTPException(
     detail="You do not have permission to perform this group operation."
 )
 
-GROUP_USER_TYPE_NOT_ALLOWED = HTTPException(
+GROUP_USERTYPE_NOT_ALLOWED = HTTPException(
     status_code=status.HTTP_403_FORBIDDEN,
-    detail="This user type is not allowed for this group."
+    detail="This usertype is not allowed for this group."
 )
 
 GROUP_UNABLE_TO_CREATE = HTTPException(
@@ -40,9 +40,9 @@ GROUP_UNABLE_TO_CREATE = HTTPException(
     detail="Unable to create group due to an internal error."
 )
 
-GROUP_USER_TYPE_NOT_FOUND = HTTPException(
+GROUP_USERTYPE_NOT_FOUND = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
-    detail="This group does not have the specified user type."
+    detail="This group does not have the specified usertype."
 )
 
 GROUP_MEMBER_EMAILS_EMPTY = HTTPException(
@@ -50,9 +50,9 @@ GROUP_MEMBER_EMAILS_EMPTY = HTTPException(
     detail="No member emails were provided for the group."
 )
 
-GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE = HTTPException(
+GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE = HTTPException(
     status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-    detail="Unable to add allowed user type to the group."
+    detail="Unable to add allowed usertype to the group."
 )
 
 GROUP_UNABLE_TO_ADD_USER_TO_GROUP = HTTPException(

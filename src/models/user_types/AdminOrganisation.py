@@ -1,5 +1,5 @@
 from src.models.User import User
-from src.constants.user_type import UserType
+from src.constants.usertype import Usertype
 from sqlalchemy import Column, Integer, ForeignKey
 
 class AdminOrganisation(User):
@@ -10,5 +10,5 @@ class AdminOrganisation(User):
     # extra fields specific to an organisation admin
 
     __mapper_args__ = {
-        "polymorphic_identity": UserType.ADMIN_ORGANISATION,
+        "polymorphic_identity": Usertype.ADMIN_ORGANISATION,
     }

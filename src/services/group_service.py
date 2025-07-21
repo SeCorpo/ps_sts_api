@@ -2,12 +2,12 @@ from typing import Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from src.exceptions import INTEGRITY_ERROR, GROUP_NAME_ALREADY_EXISTS, GROUP_NOT_FOUND, USER_NOT_FOUND, \
-    GROUP_USER_TYPE_NOT_ALLOWED, GROUP_UNABLE_TO_CREATE, GROUP_USER_TYPE_NOT_FOUND, \
-    GROUP_MEMBER_EMAILS_EMPTY, NO_VALUE_PROVIDED, GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE, \
+    GROUP_USERTYPE_NOT_ALLOWED, GROUP_UNABLE_TO_CREATE, GROUP_USERTYPE_NOT_FOUND, \
+    GROUP_MEMBER_EMAILS_EMPTY, NO_VALUE_PROVIDED, GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE, \
     GROUP_UNABLE_TO_ADD_USER_TO_GROUP
 from src.models import Group
-from src.models.associations import GroupAllowedUserType, GroupUser
-from src.schemas import GroupCreateSchema, GroupAllowedUserTypeSchema, GroupUserSchema, GroupIsActiveSchema, \
+from src.models.associations import GroupUsertype, GroupUser
+from src.schemas import GroupCreateSchema, GroupUsertypeSchema, GroupUserSchema, GroupIsActiveSchema, \
     GroupNameSchema, GroupChangeNameSchema
 from src.services import update, get_by_field, create, delete, get_user_obj_by_email, get_by_field_force
 
@@ -38,26 +38,26 @@ async def update_group_is_active(
 
 async def toggle_group_allowed_user_type(
         db: AsyncSession,
-        schema: GroupAllowedUserTypeSchema,
+        schema: GroupUsertypeSchema,
         created_by_user_id: Optional[int] = None,
         add: bool = True,
 ):
-    if not schema.group_allowed_user_types:
-        raise GROUP_USER_TYPE_NOT_FOUND
+    if not schema.group_usertypes:
+        raise GROUP_USERTYPE_NOT_FOUND
 
     group = await get_group_by_name(db, schema.group_name)
     if group is None:
         raise GROUP_NOT_FOUND
 
-    for user_type in schema.group_allowed_user_types:
-        group_allowed_user_type = await get_by_field(db, GroupAllowedUserType, group_id=group.group_id, user_type=user_type)
+    for usertype in schema.group_usertypes:
+        group_allowed_usertype = await get_by_field(db, GroupUsertype, group_id=group.group_id, usertype=usertype)
 
         if add:
-            if group_allowed_user_type is None:
+            if group_allowed_usertype is None:
                 try:
-                    obj = GroupAllowedUserType(
+                    obj = GroupUsertype(
                         group_id=group.group_id,
-                        user_type=user_type,
+                        usertype=usertype,
                         created_by_user_id=created_by_user_id,
                     )
                     await create(db, obj)
@@ -66,11 +66,11 @@ async def toggle_group_allowed_user_type(
                     raise INTEGRITY_ERROR
                 except Exception:
                     await db.rollback()
-                    raise GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE
+                    raise GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE
         else:
-            if group_allowed_user_type is not None:
+            if group_allowed_usertype is not None:
                 try:
-                    await delete(db, group_allowed_user_type)
+                    await delete(db, group_allowed_usertype)
                 except IntegrityError:
                     await db.rollback()
                     raise INTEGRITY_ERROR
@@ -94,8 +94,8 @@ async def toggle_group_user(
         if user is None:
             raise USER_NOT_FOUND
 
-        if user.user_type not in group.allowed_user_types:
-            raise GROUP_USER_TYPE_NOT_ALLOWED
+        if user.usertype not in group.usertypes:
+            raise GROUP_USERTYPE_NOT_ALLOWED
 
         group_user = await get_by_field(db, GroupUser, group_id=group.group_id, user_id=user.user_id)
 
@@ -148,14 +148,14 @@ async def create_group(
         await db.rollback()
         raise GROUP_UNABLE_TO_CREATE
 
-    if schema.group_allowed_user_types:
-        for user_type in schema.group_allowed_user_types:
-            group_allowed_user_type = await get_by_field(db, GroupAllowedUserType, group_id=group.group_id, user_type=user_type)
+    if schema.group_usertypes:
+        for usertype in schema.group_usertypes:
+            group_allowed_user_type = await get_by_field(db, GroupUsertype, group_id=group.group_id, usertype=usertype)
             if group_allowed_user_type is None:
                 try:
-                    obj = GroupAllowedUserType(
+                    obj = GroupUsertype(
                         group_id=group.group_id,
-                        user_type=user_type,
+                        usertype=usertype,
                         created_by_user_id=created_by_user_id,
                     )
                     await create(db, obj)
@@ -164,7 +164,7 @@ async def create_group(
                     raise INTEGRITY_ERROR
                 except Exception:
                     await db.rollback()
-                    raise GROUP_UNABLE_TO_CREATE_ALLOWED_USER_TYPE
+                    raise GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE
 
     if schema.group_member_emails:
         for member_email in schema.group_member_emails:
@@ -172,8 +172,8 @@ async def create_group(
             if user is None:
                 raise USER_NOT_FOUND
 
-            if user.user_type not in group.allowed_user_types:
-                raise GROUP_USER_TYPE_NOT_ALLOWED
+            if user.usertype not in group.usertypes:
+                raise GROUP_USERTYPE_NOT_ALLOWED
 
             group_user = await get_by_field(db, GroupUser, group_id=group.group_id, user_id=user.user_id)
             if group_user is None:
