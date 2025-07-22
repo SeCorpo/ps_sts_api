@@ -10,3 +10,4 @@ from .database import (
     setup_schema,
     test_connection
 )
+from .base_schema import BaseSchema

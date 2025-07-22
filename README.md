@@ -2,7 +2,7 @@
 Primary School Student Tracking System - API
 
 ---
-### Rules
+### General Rules
 
 1. Models-classes don't directly interact with get_db
 2. Always send the minimum and only if used personal data to client
@@ -18,6 +18,8 @@ they receive a database session from a router endpoint
 11. All models use BaseModel from core/base
 12. When creating an object, return the created object to the client
 13. Every database table has its own file and class (no two classes in one file)
+14. All schemas use BaseSchema from core/base_schema
+15. Schemas use the same value naming as the Models, if possible
 
 ---
 ### Service functions
@@ -33,3 +35,11 @@ they receive a database session from a router endpoint
 - Service create functions take a created_by_user_id from the current user
 - Service functions (excluding base_service) take Pydantic schemas
 - Association models are managed within the (dominant) Model service module
+
+---
+### Schema's
+#### Schema structure
+- `"Object""Identifing variable"Schema(BaseSchema)` : eg PersonEmailSchema
+- `"Object"CreateSchema("Object""Identifing variable"Schema)` : with all required fields mandatory
+- `"Object"UpdateSchema("Object""Identifing variable"Schema)` : with all fields optional
+- `"Object""Variable/ Scenario"Schema("Object""Identifing variable"Schema)` : custom scenarios, eg PersonNameSchema

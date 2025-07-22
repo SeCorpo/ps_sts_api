@@ -6,8 +6,7 @@ from src.exceptions import INTEGRITY_ERROR, GROUP_NAME_ALREADY_EXISTS, GROUP_NOT
     GROUP_MEMBER_EMAILS_EMPTY, NO_VALUE_PROVIDED, GROUP_UNABLE_TO_CREATE_ALLOWED_USERTYPE, \
     GROUP_UNABLE_TO_ADD_USER_TO_GROUP
 from src.models import Group, GroupUser, GroupUsertype
-from src.schemas import GroupCreateSchema, GroupUsertypeSchema, GroupUserSchema, GroupIsActiveSchema, \
-    GroupNameSchema, GroupChangeNameSchema
+from src.schemas import GroupNameSchema, GroupSchema, GroupChangeNameSchema
 from src.services import update, get_by_field, create, delete, get_user_obj_by_email, get_by_field_force
 
 
@@ -19,17 +18,17 @@ async def get_group_by_name_force(db: AsyncSession, group_name: str) -> Optional
 
 async def update_group_is_active(
         db: AsyncSession,
-        schema: GroupIsActiveSchema,
+        schema: GroupSchema,
 ):
-    if schema.group_is_active is None:
+    if schema.is_active is None:
         raise NO_VALUE_PROVIDED
 
-    group = await get_group_by_name(db, schema.group_name)
+    group = await get_group_by_name(db, schema.name)
     if group is None:
         raise GROUP_NOT_FOUND
 
     try:
-        await update(db, group, is_active=schema.group_is_active)
+        await update(db, group, is_active=schema.is_active)
     except IntegrityError:
         await db.rollback()
         raise INTEGRITY_ERROR
@@ -37,14 +36,14 @@ async def update_group_is_active(
 
 async def toggle_group_allowed_user_type(
         db: AsyncSession,
-        schema: GroupUsertypeSchema,
+        schema: GroupSchema,
         created_by_user_id: Optional[int] = None,
         add: bool = True,
 ):
     if not schema.group_usertypes:
         raise GROUP_USERTYPE_NOT_FOUND
 
-    group = await get_group_by_name(db, schema.group_name)
+    group = await get_group_by_name(db, schema.name)
     if group is None:
         raise GROUP_NOT_FOUND
 
@@ -77,14 +76,14 @@ async def toggle_group_allowed_user_type(
 
 async def toggle_group_user(
         db: AsyncSession,
-        schema: GroupUserSchema,
+        schema: GroupSchema,
         created_by_user_id: Optional[int] = None,
         add: bool = True
 ):
     if not schema.group_member_emails:
         raise GROUP_MEMBER_EMAILS_EMPTY
 
-    group = await get_group_by_name(db, schema.group_name)
+    group = await get_group_by_name(db, schema.name)
     if group is None:
         raise GROUP_NOT_FOUND
 
@@ -124,19 +123,25 @@ async def toggle_group_user(
 
 async def create_group(
         db: AsyncSession,
-        schema: GroupCreateSchema,
+        schema: GroupSchema,
         created_by_user_id: Optional[int] = None,
 ) -> Optional[Group]:
-    #  group.name is not available after soft deleting
-    group = await get_group_by_name_force(db, schema.group_name)
+    #  check if group name is available, also among soft deleted groups
+    group = await get_group_by_name_force(db, schema.name)
     if group:
         raise GROUP_NAME_ALREADY_EXISTS
     try:
-        group = Group(
-            name=schema.group_name,
-            is_active=schema.group_is_active,
-            created_by_user_id=created_by_user_id,
-        )
+        if schema.is_active is not None:
+            group = Group(
+                name=schema.name,
+                is_active=schema.is_active,
+                created_by_user_id=created_by_user_id,
+            )
+        else:
+            group = Group(
+                name=schema.name,
+                created_by_user_id=created_by_user_id,
+            )
         await create(db, group)
         if group is None:
             raise GROUP_UNABLE_TO_CREATE
@@ -197,7 +202,7 @@ async def delete_group(
         schema: GroupNameSchema,
 ) -> None:
     """ Function to soft delete a group, setting deleted status """
-    group = await get_group_by_name(db, schema.group_name)
+    group = await get_group_by_name(db, schema.name)
     if group is None:
         raise GROUP_NOT_FOUND
 
@@ -212,17 +217,17 @@ async def update_group_name(
         db: AsyncSession,
         schema: GroupChangeNameSchema,
 ) -> Optional[Group]:
-    group = await get_group_by_name(db, schema.group_name)
+    group = await get_group_by_name(db, schema.name)
     if group is None:
         raise GROUP_NOT_FOUND
 
-    #  check if group.name is available, also among soft deleted groups
-    new_name_group = await get_group_by_name_force(db, schema.new_group_name)
+    #  check if group name is available, also among soft deleted groups
+    new_name_group = await get_group_by_name_force(db, schema.new_name)
     if new_name_group:
         raise GROUP_NAME_ALREADY_EXISTS
 
     try:
-        await update(db, group, name=schema.new_group_name)
+        await update(db, group, name=schema.new_name)
     except IntegrityError:
         await db.rollback()
         raise INTEGRITY_ERROR

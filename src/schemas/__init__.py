@@ -1,8 +1,11 @@
+from .person_schemas import (
+    PersonEmailSchema,
+    PersonCreateSchema,
+    PersonUpdateSchema,
+)
+
 from .group_schemas import (
     GroupNameSchema,
-    GroupIsActiveSchema,
-    GroupUsertypeSchema,
-    GroupUserSchema,
-    GroupCreateSchema,
+    GroupSchema,
     GroupChangeNameSchema,
 )
