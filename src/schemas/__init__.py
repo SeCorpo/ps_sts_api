@@ -1,6 +1,6 @@
 from .person_schemas import (
     PersonEmailSchema,
-    PersonCreateSchema,
+    PersonSchema,
     PersonUpdateSchema,
 )
 

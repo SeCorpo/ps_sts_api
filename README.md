@@ -33,13 +33,13 @@ they receive a database session from a router endpoint
 
 #### Rules
 - Service create functions take a created_by_user_id from the current user
-- Service functions (excluding base_service) take Pydantic schemas
+- Service functions (excluding base_crud and (some) in common) receive AND RETURN Pydantic schemas 
 - Association models are managed within the (dominant) Model service module
 
 ---
 ### Schema's
 #### Schema structure
 - `"Object""Identifing variable"Schema(BaseSchema)` : eg PersonEmailSchema
-- `"Object"CreateSchema("Object""Identifing variable"Schema)` : with all required fields mandatory
+- `"Object"Schema("Object""Identifing variable"Schema)` : with all required fields mandatory
 - `"Object"UpdateSchema("Object""Identifing variable"Schema)` : with all fields optional
 - `"Object""Variable/ Scenario"Schema("Object""Identifing variable"Schema)` : custom scenarios, eg PersonNameSchema

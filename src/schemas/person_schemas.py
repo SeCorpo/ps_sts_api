@@ -16,7 +16,7 @@ class PersonEmailSchema(BaseSchema):
         return v
 
 
-class PersonCreateSchema(PersonEmailSchema):
+class PersonSchema(PersonEmailSchema):
     """ Address not required for now """
     first_name: constr(min_length=1, max_length=64)
     infix: Optional[constr(max_length=32)] = None
