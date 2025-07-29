@@ -2,8 +2,7 @@ from typing import Type, TypeVar, Optional, List
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
-from src.core import BaseModel
-from src.core import get_logger
+from src.core import BaseModel, get_logger
 
 
 """
@@ -16,7 +15,7 @@ get_all_force:
 delete: for normal use
 delete_force: for special use, e.g. not storing personal data or when AdminOrganisation (possibly AdminSchool)
 """
-logger = get_logger("services.base_service")
+logger = get_logger("services.base_crud")
 
 T = TypeVar('T', bound=BaseModel)
 
