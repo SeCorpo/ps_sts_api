@@ -32,12 +32,12 @@ async def read_session(key: str) -> SessionDataObject | None:
     return None
 
 
-async def set_session(session_data: SessionDataObject, key: Optional[str] = None) -> bool:
+async def set_session(session_data: SessionDataObject, key: Optional[str] = None) -> Optional[str]:
     """ Save session data to Redis and set expiration, create new session and key if key is None """
     connection = await get_redis_connection()
     if connection is None:
         logger.error(f"Redis connection not available for key '{key}'")
-        return False
+        return None
 
     try:
         if key is None:
@@ -46,15 +46,15 @@ async def set_session(session_data: SessionDataObject, key: Optional[str] = None
         data_dict = {k: str(v) for k, v in session_data.model_dump(exclude_unset=True).items()}
         if not data_dict:
             logger.warning(f"No data to set for key '{key}'")
-            return False
+            return None
 
         await connection.hset(key, mapping=data_dict)
         await _reset_session_expiration(key, trust_device=session_data.trust_device)
         logger.info(f"Session '{key}' set with fields: {list(data_dict.keys())}")
-        return True
+        return key
     except Exception as e:
         logger.error(f"Error setting session data for key '{key}': {e}")
-        return False
+        return None
     #  todo: check for if sessions exist for same computer
     #  todo: find way to only call _reset_session_expiration if updating, not creating, maybe
 
@@ -73,9 +73,10 @@ async def update_session(key: str, updates: dict[str, Any]) -> bool:
     try:
         updated_session_data = session_data.model_copy(update=updates)
         updated = await set_session(updated_session_data, key)
-        if updated:
+        if updated is not None:
             logger.info(f"Session '{key}' updated with: {list(updates.keys())}")
-        return updated
+            return True
+        return False
     except ValidationError as e:
         logger.error(f"Invalid session data format for key '{key}': {e}")
         return False
