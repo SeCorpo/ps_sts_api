@@ -32,7 +32,7 @@ async def read_session(key: str) -> SessionDataObject | None:
     return None
 
 
-async def set_session(session_data: SessionDataObject, key: Optional[str] = None) -> Optional[str]:
+async def save_session(session_data: SessionDataObject, key: Optional[str] = None) -> Optional[str]:
     """ Save session data to Redis and set expiration, create new session and key if key is None """
     connection = await get_redis_connection()
     if connection is None:
@@ -56,26 +56,26 @@ async def set_session(session_data: SessionDataObject, key: Optional[str] = None
         logger.error(f"Error setting session data for key '{key}': {e}")
         return None
     #  todo: check for if sessions exist for same computer
-    #  todo: find way to only call _reset_session_expiration if updating, not creating, maybe
 
 
 async def update_session(key: str, updates: dict[str, Any]) -> bool:
     """ Update fields in an existing session and reset its expiration """
+    if not updates:
+        logger.warning(f"No updates for session key '{key}'")
+        return False
+
     session_data = await read_session(key)
     if session_data is None:
         logger.warning(f"No session found for key '{key}'")
         return False
 
-    if not updates:
-        logger.warning(f"No updates for session key '{key}'")
-        return False
-
     try:
         updated_session_data = session_data.model_copy(update=updates)
-        updated = await set_session(updated_session_data, key)
+        updated = await save_session(updated_session_data, key)
         if updated is not None:
             logger.info(f"Session '{key}' updated with: {list(updates.keys())}")
             return True
+        logger.error(f"Failed to update session data for key '{key}'")
         return False
     except ValidationError as e:
         logger.error(f"Invalid session data format for key '{key}': {e}")

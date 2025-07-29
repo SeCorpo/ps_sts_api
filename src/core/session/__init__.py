@@ -8,7 +8,7 @@ from .session_data_object import SessionDataObject
 
 from .service import (
     read_session,
-    set_session,
+    save_session,
     update_session,
     delete_session,
 )
