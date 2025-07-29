@@ -1,15 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from src.core.session import connect_to_redis, close_redis_connection
+from src.core.database import test_connection
+# from src.core.database import setup_schema
 
-# from src.core import test_connection
-# from src.core import setup_schema
 
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
-    # await test_connection()
+    await connect_to_redis()
+    await test_connection()
     # await setup_schema()
     yield
+    await close_redis_connection()
 
 app = FastAPI(lifespan=lifespan)
 

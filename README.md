@@ -18,8 +18,7 @@ they receive a database session from a router endpoint
 11. All models use BaseModel from core/base
 12. When creating an object, return the created object to the client
 13. Every database table has its own file and class (no two classes in one file)
-14. All schemas use BaseSchema from core/base_schema
-15. Schemas use the same value naming as the Models, if possible
+14. Redis (sub) service functions use session_base_crud for crud operations
 
 ---
 ### Service functions
@@ -35,6 +34,7 @@ they receive a database session from a router endpoint
 - Service create functions take a created_by_user_id from the current user
 - Service functions (excluding base_crud and (some) in common) receive AND RETURN Pydantic schemas 
 - Association models are managed within the (dominant) Model service module
+- Service functions get a get_db() database session from the router calling them
 
 ---
 ### Schema's
@@ -43,3 +43,9 @@ they receive a database session from a router endpoint
 - `"Object"Schema("Object""Identifing variable"Schema)` : with all required fields mandatory
 - `"Object"UpdateSchema("Object""Identifing variable"Schema)` : with all fields optional
 - `"Object""Variable/ Scenario"Schema("Object""Identifing variable"Schema)` : custom scenarios, eg PersonNameSchema
+
+#### Rules
+- All schemas use BaseSchema from core/base_schema
+- Schemas use the same value naming as there Models, if possible (unless it's for added functionality)
+
+---
