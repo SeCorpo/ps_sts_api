@@ -1,7 +1,9 @@
-from typing import Type, TypeVar, Optional, List, cast
+from typing import Type, TypeVar, Optional, List, cast, Any
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
+from sqlalchemy.sql import Select
+from sqlalchemy.engine import Result, ScalarResult
 from src.core import BaseModel, get_logger
 
 """
@@ -19,26 +21,25 @@ logger = get_logger("services.base_crud")
 T = TypeVar('T', bound=BaseModel)
 
 
-async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[T]:
+async def get_by_field(db: AsyncSession, model: Type[T], **filters: Any) -> Optional[T]:
     """ Get a single object by field(s), excluding deleted """
     try:
-        query = select(model).filter_by(**filters, deleted=False)
-        result = await db.execute(query)
-        return result.scalar_one_or_none()
+        query: Select = select(model).filter_by(**filters, deleted=False)
+        result: Result = await db.execute(query)
+        return cast(Optional[T], result.scalar_one_or_none())
     except (NoResultFound, SQLAlchemyError) as e:
         logger.error(f"Error fetching {model.__name__} with {filters}: {e}")
         return None
 
 
-async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
+async def get_all(db: AsyncSession, model: Type[T], **filters: Any) -> List[T]:
     """ Get all objects for a model, optionally filtered by fields, excluding deleted """
     try:
-        query = select(model).filter_by(deleted=False)
+        query: Select = select(model).filter_by(deleted=False)
         if filters:
             query = query.filter_by(**filters)
-        scalars_result = await db.scalars(query)
-        result_list = scalars_result.all()
-        return cast(List[T], result_list)
+        scalars_result: ScalarResult[T] = await db.scalars(query)
+        return cast(List[T], scalars_result.all())
     except SQLAlchemyError as e:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
@@ -57,7 +58,7 @@ async def create(db: AsyncSession, obj: T) -> Optional[T]:
         return None
 
 
-async def update(db: AsyncSession, obj: T, **data) -> Optional[T]:
+async def update(db: AsyncSession, obj: T, **data: Any) -> Optional[T]:
     """Update an object and commit."""
     try:
         for key, value in data.items():
@@ -83,26 +84,25 @@ async def delete(db: AsyncSession, obj: T) -> bool:
         return False
 
 
-async def get_by_field_force(db: AsyncSession, model: Type[T], **filters) -> Optional[T]:
+async def get_by_field_force(db: AsyncSession, model: Type[T], **filters: Any) -> Optional[T]:
     """ Get a single object by field(s), including objects with deleted=True """
     try:
-        query = select(model).filter_by(**filters)
-        result = await db.execute(query)
-        return result.scalar_one_or_none()
+        query: Select = select(model).filter_by(**filters)
+        result: Result = await db.execute(query)
+        return cast(Optional[T], result.scalar_one_or_none())
     except (NoResultFound, SQLAlchemyError) as e:
         logger.error(f"Error fetching {model.__name__} with {filters}: {e}")
         return None
 
 
-async def get_all_force(db: AsyncSession, model: Type[T], **filters) -> List[T]:
+async def get_all_force(db: AsyncSession, model: Type[T], **filters: Any) -> List[T]:
     """ Get all objects for a model, optionally filtered by fields, including objects with deleted=True """
     try:
-        query = select(model)
+        query: Select = select(model)
         if filters:
             query = query.filter_by(**filters)
-        scalars_result = await db.scalars(query)
-        result_list = scalars_result.all()
-        return cast(List[T], result_list)
+        scalars_result: ScalarResult[T] = await db.scalars(query)
+        return cast(List[T], scalars_result.all())
     except SQLAlchemyError as e:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
