@@ -1,4 +1,4 @@
-from typing import Type, TypeVar, Optional, List
+from typing import Type, TypeVar, Optional, List, cast
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
@@ -32,11 +32,12 @@ async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[
 async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
     """ Get all objects for a model, optionally filtered by fields, excluding deleted """
     try:
-        query = select(model)
+        query = select(model).filter_by(deleted=False)
         if filters:
-            query = query.filter_by(**filters, deleted=False)
-        result = await db.execute(query)
-        return result.scalars().all()
+            query = query.filter_by(**filters)
+        scalars_result = await db.scalars(query)
+        result_list = scalars_result.all()
+        return cast(List[T], result_list)
     except SQLAlchemyError as e:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
