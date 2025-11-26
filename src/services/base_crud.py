@@ -4,7 +4,6 @@ from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from sqlalchemy import select
 from src.core import BaseModel, get_logger
 
-
 """
 get_by_field: for normal use, no need to modify deleted objects
 get_by_field_force: for use when modifying unique values, e.g. create functions
@@ -19,6 +18,7 @@ logger = get_logger("services.base_crud")
 
 T = TypeVar('T', bound=BaseModel)
 
+
 async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[T]:
     """ Get a single object by field(s), excluding deleted """
     try:
@@ -28,6 +28,7 @@ async def get_by_field(db: AsyncSession, model: Type[T], **filters) -> Optional[
     except (NoResultFound, SQLAlchemyError) as e:
         logger.error(f"Error fetching {model.__name__} with {filters}: {e}")
         return None
+
 
 async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
     """ Get all objects for a model, optionally filtered by fields, excluding deleted """
@@ -42,6 +43,7 @@ async def get_all(db: AsyncSession, model: Type[T], **filters) -> List[T]:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
 
+
 async def create(db: AsyncSession, obj: T) -> Optional[T]:
     """ Create a new object """
     try:
@@ -53,6 +55,7 @@ async def create(db: AsyncSession, obj: T) -> Optional[T]:
         await db.rollback()
         logger.error(f"Error creating {type(obj).__name__}: {e}")
         return None
+
 
 async def update(db: AsyncSession, obj: T, **data) -> Optional[T]:
     """Update an object and commit."""
@@ -66,6 +69,7 @@ async def update(db: AsyncSession, obj: T, **data) -> Optional[T]:
         await db.rollback()
         logger.error(f"Error updating {type(obj).__name__}: {e}")
         return None
+
 
 async def delete(db: AsyncSession, obj: T) -> bool:
     """ Set an object as deleted """
@@ -89,17 +93,20 @@ async def get_by_field_force(db: AsyncSession, model: Type[T], **filters) -> Opt
         logger.error(f"Error fetching {model.__name__} with {filters}: {e}")
         return None
 
+
 async def get_all_force(db: AsyncSession, model: Type[T], **filters) -> List[T]:
     """ Get all objects for a model, optionally filtered by fields, including objects with deleted=True """
     try:
         query = select(model)
         if filters:
             query = query.filter_by(**filters)
-        result = await db.execute(query)
-        return result.scalars().all()
+        scalars_result = await db.scalars(query)
+        result_list = scalars_result.all()
+        return cast(List[T], result_list)
     except SQLAlchemyError as e:
         logger.error(f"Error fetching all {model.__name__} with {filters}: {e}")
         return []
+
 
 async def delete_force(db: AsyncSession, obj: T) -> bool:
     """ Delete an object from database """
